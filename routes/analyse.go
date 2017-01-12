@@ -34,10 +34,10 @@ func GetAnalyse(c *gin.Context) {
   start := time.Now()
 
   img = imgProcess.ResizeImage(img, 100 * 100)
-  imgProcess.GetPixels(img)
+  pixels := imgProcess.GetPixels(img, 0.75)
 
   elapsed := time.Since(start)
   log.Printf("Binomial took %s", elapsed)
 
-  c.JSON(http.StatusOK, gin.H{ "imageUrl": imageUrl })
+  c.JSON(http.StatusOK, gin.H{ "imageUrl": imageUrl, "pixels": len(pixels) })
 }

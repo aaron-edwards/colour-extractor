@@ -3,6 +3,7 @@ package imgProcess
 import (
   "math"
   "image"
+	"github.com/lucasb-eyer/go-colorful"
   "github.com/nfnt/resize"
 )
 
@@ -26,23 +27,30 @@ func ResizeImage(img image.Image, pixels int) (image.Image) {
   return resize.Resize(newWidth, 0, img, resize.Bilinear)
 }
 
-func GetPixels(img image.Image) ([] RGBA) {
+func GetPixels(img image.Image, alphaLimit float64) ([] colorful.Color) {
   width, height := imageSize(img)
 
-  var pixels = make([]RGBA, width * height)
+  var pixels []colorful.Color
   for y := 0; y < height; y++ {
     for x := 0; x < width; x++ {
-      pixels[x + (y * width)] = rgbaToPixel(img.At(x, y).RGBA())
+			pixel := rgbaToPixel(img.At(x,y).RGBA())
+			if float64(pixel.A) >= alphaLimit {
+      	pixels = append(pixels, colorful.Color{pixel.R, pixel.B, pixel.G})
+			}
     }
   }
 
   return pixels
 }
 
-func rgbaToPixel(r uint32, g uint32, b uint32, a uint32) RGBA {
-    return RGBA{int(r / 257), int(g / 257), int(b / 257), int(a / 257)}
+func rgbaToPixel(r uint32, g uint32, b uint32, a uint32) Pixel {
+    return Pixel{
+			float64(r / 257) / 255.0,
+			float64(g / 257) / 255.0,
+			float64(b / 257) / 255.0,
+			float64(a / 257) / 255.0}
 }
 
-type RGBA struct {
-	R,G,B,A int
+type Pixel struct {
+	R,G,B,A float64
 }
