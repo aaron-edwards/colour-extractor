@@ -1,24 +1,30 @@
 package main
 
 import (
-	"os"
-
-	"github.com/gin-gonic/gin"
+  "os"
+  "net/http"
+  "github.com/gin-gonic/gin"
+  "colour-extractor/routes"
 )
+import _ "image/png"
+import _ "image/jpeg"
+import _ "image/gif"
 
 func main() {
-	port := os.Getenv("PORT")
+  port := os.Getenv("PORT")
 
-	if port == "" {
+  if port == "" {
     port = "8080"
-	}
+  }
 
-	router := gin.New()
-	router.Use(gin.Logger())
+  router := gin.New()
+  router.Use(gin.Logger())
 
-	router.GET("/ping", func(c *gin.Context) {
-    c.JSON(200, gin.H{ "message": "pong" })
-	})
+  router.GET("/ping", func(c *gin.Context) {
+    c.JSON(http.StatusOK, gin.H{ "message": "pong" })
+  })
 
-	router.Run(":" + port)
+  router.GET("/analyse", routes.GetAnalyse)
+
+  router.Run(":" + port)
 }
