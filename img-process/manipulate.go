@@ -3,7 +3,6 @@ package imgProcess
 import (
   "math"
   "image"
-	"github.com/lucasb-eyer/go-colorful"
   "github.com/nfnt/resize"
 )
 
@@ -27,30 +26,19 @@ func ResizeImage(img image.Image, pixels int) (image.Image) {
   return resize.Resize(newWidth, 0, img, resize.Bilinear)
 }
 
-func GetPixels(img image.Image, alphaLimit float64) ([] colorful.Color) {
+func GetPixels(img image.Image, alphaLimit float64) ([][3]float64) {
   width, height := imageSize(img)
 
-  var pixels []colorful.Color
+  var pixels [][3]float64
   for y := 0; y < height; y++ {
     for x := 0; x < width; x++ {
 			pixel := rgbaToNormPixel(img.At(x,y).RGBA())
 			if float64(pixel.A) >= alphaLimit {
-      	pixels = append(pixels, colorful.Color{pixel.R, pixel.B, pixel.G})
+      	pixels = append(pixels, [3]float64{pixel.R, pixel.G, pixel.B})
 			}
     }
   }
   return pixels
-}
-
-func  GetLabPixels(img image.Image, alphaLimit float64) ([][3]float64) {
-	pixels := GetPixels(img, alphaLimit)
-	var labPixels [][3]float64
-
-	for x := 0; x < len(pixels); x++ {
-		l,a,b := pixels[x].Lab()
-		labPixels = append(labPixels, [3]float64{l,a,b})
-	}
-	return labPixels
 }
 
 func rgbaToNormPixel(r uint32, g uint32, b uint32, a uint32) Pixel {

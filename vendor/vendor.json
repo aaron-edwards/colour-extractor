@@ -63,6 +63,12 @@
 			"revisionTime": "2016-11-23T14:36:37Z"
 		},
 		{
+			"checksumSHA1": "czHAfGoKMrhtFaUTNCmdCJiVNfQ=",
+			"path": "github.com/mdesenfants/gokmeans",
+			"revision": "6fbd538b6ce73217d3144ec4182e1ce534a66d39",
+			"revisionTime": "2014-06-15T17:21:48Z"
+		},
+		{
 			"checksumSHA1": "r5eQHkttko6kxroDEENXbmXKrSs=",
 			"path": "github.com/nfnt/resize",
 			"revision": "891127d8d1b52734debe1b3c3d7e747502b6c366",
