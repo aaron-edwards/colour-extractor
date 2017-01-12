@@ -13,6 +13,12 @@
 			"revision": ""
 		},
 		{
+			"checksumSHA1": "D7sApy+hkpCPPXBfd1OmrwXLqpw=",
+			"path": "github.com/bugra/kmeans",
+			"revision": "bf06fda928a76d03b9802e7a677229ff038969ef",
+			"revisionTime": "2014-08-31T01:18:22Z"
+		},
+		{
 			"checksumSHA1": "RsNwOto8G8aXIiRrlFn4dtU9q/g=",
 			"path": "github.com/gin-gonic/gin",
 			"revision": "e2212d40c62a98b388a5eb48ecbdcf88534688ba",

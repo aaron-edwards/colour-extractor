@@ -33,17 +33,27 @@ func GetPixels(img image.Image, alphaLimit float64) ([] colorful.Color) {
   var pixels []colorful.Color
   for y := 0; y < height; y++ {
     for x := 0; x < width; x++ {
-			pixel := rgbaToPixel(img.At(x,y).RGBA())
+			pixel := rgbaToNormPixel(img.At(x,y).RGBA())
 			if float64(pixel.A) >= alphaLimit {
       	pixels = append(pixels, colorful.Color{pixel.R, pixel.B, pixel.G})
 			}
     }
   }
-
   return pixels
 }
 
-func rgbaToPixel(r uint32, g uint32, b uint32, a uint32) Pixel {
+func  GetLabPixels(img image.Image, alphaLimit float64) ([][3]float64) {
+	pixels := GetPixels(img, alphaLimit)
+	var labPixels [][3]float64
+
+	for x := 0; x < len(pixels); x++ {
+		l,a,b := pixels[x].Lab()
+		labPixels = append(labPixels, [3]float64{l,a,b})
+	}
+	return labPixels
+}
+
+func rgbaToNormPixel(r uint32, g uint32, b uint32, a uint32) Pixel {
     return Pixel{
 			float64(r / 257) / 255.0,
 			float64(g / 257) / 255.0,

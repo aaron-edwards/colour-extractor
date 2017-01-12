@@ -34,7 +34,7 @@ func GetAnalyse(c *gin.Context) {
   start := time.Now()
 
   img = imgProcess.ResizeImage(img, 100 * 100)
-  pixels := imgProcess.GetPixels(img, 0.75)
+  pixels := imgProcess.GetLabPixels(img, 0.75)
 
   elapsed := time.Since(start)
   log.Printf("Binomial took %s", elapsed)
