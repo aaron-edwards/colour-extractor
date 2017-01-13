@@ -32,23 +32,14 @@ func GetPixels(img image.Image, alphaLimit float64) ([][3]float64) {
   var pixels [][3]float64
   for y := 0; y < height; y++ {
     for x := 0; x < width; x++ {
-			pixel := rgbaToNormPixel(img.At(x,y).RGBA())
+			pixel := RgbaToNormPixel(img.At(x,y).RGBA())
 			if float64(pixel.A) >= alphaLimit {
-      	pixels = append(pixels, [3]float64{pixel.R, pixel.G, pixel.B})
+				h,c,l := NormRGBtoHSL(pixel)
+      	pixels = append(pixels, [3]float64{h,c,l})
 			}
     }
   }
   return pixels
 }
 
-func rgbaToNormPixel(r uint32, g uint32, b uint32, a uint32) Pixel {
-    return Pixel{
-			float64(r / 257) / 255.0,
-			float64(g / 257) / 255.0,
-			float64(b / 257) / 255.0,
-			float64(a / 257) / 255.0}
-}
 
-type Pixel struct {
-	R,G,B,A float64
-}

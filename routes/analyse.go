@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"log"
 	"time"
 	"net/http"
@@ -31,6 +30,8 @@ func GetAnalyse(c *gin.Context) {
 		return
 	}
 
+	start := time.Now()
+
 	response, err := http.Get(imageUrl)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{ "error": err })
@@ -43,35 +44,41 @@ func GetAnalyse(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{ "error": err })
 	}
 
-	start := time.Now()
+	log.Printf("Downloading took %s", time.Since(start))
+  downloadTime := time.Now()
 
-	img = imgProcess.ResizeImage(img, 100 * 100)
+	img = imgProcess.ResizeImage(img, 50 * 50)
 	pixels := imgProcess.GetPixels(img, 0.75)
 	nodes := toNode(pixels)
 
-	var colours []string
-	_, centroids := gokmeans.Train(nodes, 5, 50)
+	log.Printf("Processing took %s", time.Since(downloadTime))
+  imgProcessTime := time.Now()
 
-		for _, centroid := range centroids {
-			colours = append(colours, toHex(centroid))
-		}
+  k := 5
+	_, centroids := gokmeans.Train(nodes, k, 20)
 
-	elapsed := time.Since(start)
-	log.Printf("Binomial took %s", elapsed)
+	log.Printf("Clustering took %s", time.Since(imgProcessTime))
+  clusterTime := time.Now()
 
 
-		for _, nodes := range nodes {
-			index := gokmeans.Nearest(nodes, centroids)
-			fmt.Println(toHex(nodes), nodes, "belongs in cluster", index+1, ".")
-		}
+  var colourGroups = make(map[int]int)
+  for _, node := range nodes {
+    index := gokmeans.Nearest(node, centroids)
+    colourGroups[index] ++
+  }
 
-	c.JSON(http.StatusOK, gin.H{ "imageUrl": imageUrl, "colours": colours, "elapsed" : elapsed})
+  var colours = make(map[string]float64)
+  for index, centroid := range centroids {
+    colours[toHex(centroid)] = float64(colourGroups[index]) / float64(len(nodes))
+  }
+
+
+	log.Printf("Grouping took %s", time.Since(clusterTime))
+
+	c.JSON(http.StatusOK, gin.H{ "imageUrl": imageUrl, "colours": colours})
 }
 
-func toHex(rgb gokmeans.Node) string {
-	return colorful.Color{rgb[0], rgb[1], rgb[2]}.Hex()
+func toHex(col gokmeans.Node) string {
+  return colorful.Hsl(col[0], col[1], col[2]).Hex()
 }
 
-func labToHex(lab gokmeans.Node) string {
-	return colorful.Lab(lab[0], lab[1], lab[2]).Hex()
-}
