@@ -22,6 +22,10 @@ func toHex(col gokmeans.Node) string {
   return colorful.Hsl(col[0], col[1], col[2]).Hex()
 }
 
+//func toRGB(col gokmeans.Node) (r, g, b, a uint8) {
+//  return colorful.Hsl(col[0], col[1], col[2]).RGB255()
+//}
+
 type HSL struct {
   H float64
   S float64
@@ -29,7 +33,7 @@ type HSL struct {
 }
 
 type ClusterData struct {
-  CenterRGB string
+  CenterHex string
   CenterHSL HSL
   PixelRatio float64
 }
@@ -45,15 +49,16 @@ func groupNodes(centroids []gokmeans.Node, data []gokmeans.Node) ([]ClusterData)
   for index, group := range colourGroups {
     centroid := centroids[index]
     hsl := HSL{ H: centroid[0], S: centroid[1], L: centroid[2]}
-    rgb := toHex(centroid)
+    hex := toHex(centroid)
+   // rgb := toRGB(centroid)
     ratio := float64(len(group)) / float64(len(data))
-    clusters = append(clusters, ClusterData{ CenterRGB: rgb, CenterHSL: hsl, PixelRatio: ratio })
+    clusters = append(clusters, ClusterData{ CenterHex: hex, CenterHSL: hsl, PixelRatio: ratio })
   }
 
   return clusters
 }
 
-func Cluster(img image.Image) ([]ClusterData) {
+func Cluster(img image.Image) ([]ClusterData, []gokmeans.Node) {
 	pixels := imgProcess.GetPixels(img, 0.75)
 	nodes := toNode(pixels)
 
@@ -64,7 +69,7 @@ func Cluster(img image.Image) ([]ClusterData) {
 
   groups := groupNodes(centroids, nodes)
 
-  return groups
+  return groups, centroids
 }
 
 
